@@ -11,14 +11,14 @@ if __FILE__ =~ %r{\Ahttps?://}
     tempdir
   ].map(&:shellescape).join(" ")
 
-  if (branch = __FILE__[%r{paradis/(.+)/api.rb}, 1])
+  if (branch = __FILE__[%r{paradis/(.+)/api_template.rb}, 1])
     Dir.chdir(tempdir) { git checkout: branch }
   end
 else
   source_paths.unshift(File.dirname(__FILE__))
 end
 
-apply "base.rb"
+apply "template.rb"
 
 insert_into_file "config/routes.rb", after: "mount MissionControl::Jobs::Engine, at: \"/jobs\"\n" do
   <<~RUBY.indent(2).prepend("\n")
