@@ -1,0 +1,67 @@
+id:
+  dry_schema:
+    or: "Atau"
+    errors:
+      unexpected_key: "Tidak diizinkan"
+      array?: "Harus berupa array"
+      empty?: "Harus kosong"
+      excludes?: "Tidak boleh menyertakan %{value}"
+      excluded_from?:
+        arg:
+          default: "Tidak boleh salah satu dari: %{list}"
+          range: "Tidak boleh salah satu dari: %{list_left} - %{list_right}"
+      exclusion?: "Tidak boleh salah satu dari: %{list}"
+      eql?: "Harus sama dengan %{left}"
+      not_eql?: "Tidak boleh sama dengan %{left}"
+      filled?: "Harus diisi"
+      format?: "Format tidak valid"
+      number?: "Harus berupa angka"
+      odd?: "Harus ganjil"
+      even?: "Harus genap"
+      gt?: "Harus lebih besar dari %{num}"
+      gteq?: "Harus lebih besar atau sama dengan %{num}"
+      hash?: "Harus berupa hash"
+      included_in?:
+        arg:
+          default: "Harus salah satu dari: %{list}"
+          range: "Harus salah satu dari: %{list_left} - %{list_right}"
+      inclusion?: "Harus salah satu dari: %{list}"
+      includes?: "Harus menyertakan %{value}"
+      bool?: "Harus boolean"
+      true?: "Harus benar"
+      false?: "Harus salah"
+      int?: "Harus berupa bilangan bulat"
+      float?: "Harus berupa bilangan desimal"
+      decimal?: "Harus berupa angka desimal"
+      date?: "Harus berupa tanggal"
+      date_time?: "Harus berupa tanggal dan waktu"
+      time?: "Harus berupa waktu"
+      key?: "Harus ada"
+      attr?: "Harus ada"
+      lt?: "Harus kurang dari %{num}"
+      lteq?: "Harus kurang atau sama dengan %{num}"
+      max_size?: "Ukuran tidak boleh lebih dari %{num}"
+      max_bytesize?: "Ukuran byte tidak boleh lebih dari %{num}"
+      min_size?: "Ukuran tidak boleh kurang dari %{num}"
+      min_bytesize?: "Ukuran byte tidak boleh kurang dari %{num}"
+      nil?: "Tidak boleh didefinisikan"
+      str?: "Harus berupa string"
+      type?: "Harus berupa %{type}"
+      respond_to?: "Harus merespons %{method}"
+      size?:
+        arg:
+          default: "Ukuran harus %{size}"
+          range: "Ukuran harus dalam rentang %{size_left} - %{size_right}"
+        value:
+          string:
+            arg:
+              default: "Panjang harus %{size}"
+              range: "Panjang harus dalam rentang %{size_left} - %{size_right}"
+      bytesize?:
+        arg:
+          default: "Harus %{size} byte"
+          range: "Harus dalam rentang %{size_left} - %{size_right} byte"
+      uuid_v4?: "Bukan UUID yang valid"
+      uri?: "Bukan URI yang valid"
+      not:
+        empty?: "Tidak boleh kosong"
