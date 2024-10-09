@@ -29,7 +29,7 @@ insert_into_file "config/routes.rb", after: "mount MissionControl::Jobs::Engine,
   RUBY
 end
 
-insert_into_file "app/models/current.rb", <<~RUBY
+file "app/models/current.rb", <<~RUBY
   class Current < ActiveSupport::CurrentAttributes
     attribute :api_ctx
   end
