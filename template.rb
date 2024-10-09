@@ -1,16 +1,24 @@
+def gem_exists?(name)
+  IO.read("Gemfile") =~ /^\s*gem ['"]#{name}['"]/
+end
+
+def add_gem(name, *options)
+  gem(name, *options) unless gem_exists?(name)
+end
+
 gem_group :development, :test do
-  gem "dotenv"
+  add_gem "dotenv"
 end
 
 gem_group :development do
-  gem "standard"
+  add_gem "standard"
 end
 
-gem "ostruct"
-gem "dry-schema"
-gem "grape-entity"
-gem "rapidjson"
-gem "mission_control-jobs"
+add_gem "ostruct"
+add_gem "dry-schema"
+add_gem "grape-entity"
+add_gem "rapidjson"
+add_gem "mission_control-jobs"
 
 copy_file "config/locales/id.yml"
 
@@ -74,7 +82,7 @@ file "app/utils/util.rb", <<~RUBY
 RUBY
 
 if options[:database] == "sqlite3"
-  gem "ulid"
+  add_gem "ulid"
 
   initializer "active_record.rb", <<~RUBY
     ActiveRecord::Base.class_eval do
