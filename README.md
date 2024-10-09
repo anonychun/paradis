@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/anonychun/paradis" target="_blank" rel="noopener noreferrer">
-    <img width="180" src="https://github.com/user-attachments/assets/b49f3d2d-eed2-460c-8a80-2df87a07b170" alt="Paradis logo">
+    <img width="180" src="https://github.com/user-attachments/assets/338efbcb-e1e4-4bce-8016-4f9c5ebaeb6b" alt="Paradis logo">
   </a>
 </p>
 
