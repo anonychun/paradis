@@ -17,7 +17,13 @@ There are multiple templates available to choose from:
 - API
 
   ```bash
-  rails new app --main --api --skip-kamal --skip-thruster --skip-brakeman -m https://raw.githubusercontent.com/anonychun/paradis/main/api_template.rb
+  rails new app \
+    --main \
+    --api \
+    --skip-kamal \
+    --skip-thruster \
+    --skip-brakeman \
+    -m https://raw.githubusercontent.com/anonychun/paradis/main/api_template.rb
   ```
 
 - Inertia
