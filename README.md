@@ -45,7 +45,7 @@ Features that are available in all templates.
 You can validate parameters using the `params.validate!` method. This method uses the `dry-schema` gem to validate parameters based on the rules you define.
 
 ```ruby
-class ArticleController < Api::V1Controller
+class Api::V1::ArticleController < Api::V1Controller
   def create
     params.validate! do
       required(:title).filled(:string)
@@ -162,7 +162,7 @@ When validation fails, the response will properly map the error messages with th
 You can use the `render_json` method to send a JSON response.
 
 ```ruby
-class ArticleController < Api::V1Controller
+class Api::V1::ArticleController < Api::V1Controller
   def index
     articles = Article.all
     render_json data: ArticleEntity.represent(articles)
@@ -183,7 +183,7 @@ end
 You can also build a response using the `present_meta` and `present` method and send it using the `render_json` method.
 
 ```ruby
-class ArticleController < Api::V1Controller
+class Api::V1::ArticleController < Api::V1Controller
   def show
     present_meta :ads, true
 
@@ -200,7 +200,7 @@ Send error response using the `error!` method if you're on a controller and rais
 If you're sending a string as error it will automatically be converted to an object with the key `message`.
 
 ```ruby
-class ArticleController < Api::V1Controller
+class Api::V1::ArticleController < Api::V1Controller
   def restricted
     error!("You are not authorized to access this resource", status: 403)
   end
@@ -227,7 +227,7 @@ param_error!(:email, "must be filled", "must be a valid email")
 Use the `paginate` method to paginate the records. The `paginate` method automatically validate and uses the `page`, `per_page`, `start_date` and `end_date` parameters from the request to paginate the records.
 
 ```ruby
-class ArticleController < Api::V1Controller
+class Api::V1::ArticleController < Api::V1Controller
   def index
     articles = paginate Article.order(created_at: :desc)
     render_json data: ArticleEntity.represent(articles)
