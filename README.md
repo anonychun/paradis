@@ -97,7 +97,7 @@ Be aware that you can also expose associations and nested entities, avoid exposi
 class ArticleEntity < ApplicationEntity
   expose :title
   expose :content
-  expose :author, with: AuthorEntity, if: lambda { |object|
+  expose :author, using: AuthorEntity, if: lambda { |object|
     object.association(:author).loaded?
   }
 end
@@ -118,10 +118,10 @@ end
 class ArticleEntity < ApplicationEntity
   expose :title
   expose :content
-  expose :thumbnail_file, with: BlobEntity, if: lambda { |object|
+  expose :thumbnail_file, using: BlobEntity, if: lambda { |object|
     object.association(:thumbnail_file_blob).loaded?
   }
-  expose :content_files, with: BlobEntity, if: lambda { |object|
+  expose :content_files, using: BlobEntity, if: lambda { |object|
     object.association(:content_files_blobs).loaded?
   }
 end
