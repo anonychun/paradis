@@ -1,8 +1,10 @@
 <p align="center">
-  <img width="400" src="https://github.com/user-attachments/assets/338efbcb-e1e4-4bce-8016-4f9c5ebaeb6b" alt="Paradis logo">
+  <img width="300" src="https://github.com/user-attachments/assets/338efbcb-e1e4-4bce-8016-4f9c5ebaeb6b" alt="Paradis logo">
 </p>
 
-# PARADIS
+<h1 align="center">
+  PARADIS
+</h1>
 
 This project is a Rails application template designed to streamline the setup of new Rails projects. It includes predefined configurations, routes, and utility modules to help you get started quickly.
 
