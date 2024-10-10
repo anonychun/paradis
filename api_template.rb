@@ -104,8 +104,8 @@ lib "api/helpers/presenter.rb", <<~RUBY
     end
 
     def render_json(meta: nil, data: nil, errors: nil, status: 200)
-      present_meta(meta) if meta.present?
-      present(data) if data.present?
+      present_meta(meta) unless meta.nil?
+      present(data) unless data.nil?
 
       ok = status < 400 || errors.blank?
       render json: {
