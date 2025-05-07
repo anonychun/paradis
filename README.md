@@ -12,39 +12,169 @@ I created this template after being inspired by ecosystems outside of Rails. Obs
 
 ## Installation
 
-There are multiple templates available to choose from:
+Create a new Rails application using the template by running the following command in your terminal:
 
-- API
+```bash
+rails new app \
+  --skip-rubocop \
+  -m https://raw.githubusercontent.com/anonychun/paradis/main/template.rb
+```
 
-  ```bash
-  rails new app \
-    --main \
-    --api \
-    --skip-kamal \
-    --skip-thruster \
-    --skip-brakeman \
-    -m https://raw.githubusercontent.com/anonychun/paradis/main/api_template.rb
-  ```
-
-- Inertia
-
-  ```bash
-  # coming soon
-  ```
+This command will create a new Rails application named `app` and apply the Paradis template to it. The `--skip-rubocop` option is used to skip the default RuboCop configuration, as Paradis uses `standard` for linting and formatting.
 
 ## Basic Usage
 
 Paradis is just combination of built-in Rails features and some additional gems. Here are some of the features that you can use:
 
-### Base
+#### Entity Layer
 
-Features that are available in all templates.
+Entity objects are used to represent your models in a way that can be easily serialized into JSON. You can define an entity object by inheriting from `ApplicationEntity` powered by `grape-entity` gem and expose the attributes you want to include in the JSON response.
 
-- Use `rapidjson` for JSON serialization.
-- `ULID` as the primary key for SQLite database and `UUIDv7` for other databases.
-- Fix datetime when using PostgreSQL database to use `timestamptz` for time zone support.
-- Setup `mission_control-jobs` for monitoring background jobs.
-- Clear `log` in local environment everytime starting the app.
+Be aware that you can also expose associations and nested entities, avoid exposing sensitive and unnecessary attributes.
+
+```ruby
+class ArticleEntity < ApplicationEntity
+  expose :title
+  expose :content
+  expose :author, using: AuthorEntity
+end
+```
+
+If you're using Active Storage, you can expose the attachment URLs by using the other defined entity that only exposes the URL.
+
+```ruby
+class Article < ApplicationRecord
+  has_one_attached :thumbnail_file
+  has_many_attached :content_files
+end
+
+class BlobEntity < ApplicationEntity
+  expose :url
+end
+
+class ArticleEntity < ApplicationEntity
+  expose :title
+  expose :content
+  expose :thumbnail_file, using: BlobEntity
+  expose :content_files, using: BlobEntity
+end
+```
+
+#### Standardize API Response
+
+Use `present` method in `controller` or `view` to standardize the API response. The `present` method will automatically wrap the response in a JSON object with the following structure:
+
+```json
+{
+  "ok": true,
+  "meta": null,
+  "data": {
+    // this will be the response data
+  },
+  "errors": {
+    // if the status code is indicating an error
+    // this will be containing the error messages
+    // otherwise null
+  }
+}
+```
+
+Example of using `present` in a controller or view:
+
+```ruby
+# app/controllers/api/v1/hello_controller.rb
+class Api::V1::HelloController < Api::V1Controller
+  def greeting
+    @to = "world"
+  end
+end
+
+# app/views/api/v1/hello/greeting.json.jbuilder
+present json do
+  json.hello @to
+end
+```
+
+Or return a JSON response directly in the controller.
+
+```ruby
+class Api::V1::HelloController < Api::V1Controller
+  def greeting
+    present json: {
+      hello: "world"
+    }
+  end
+end
+```
+
+Both methods will return the same JSON response.
+
+```json
+{
+  "ok": true,
+  "meta": null,
+  "data": {
+    "hello": "world"
+  },
+  "errors": null
+}
+```
+
+You can also use `present_meta` in controller to include meta information in the response.
+
+```ruby
+class Api::V1::HelloController < Api::V1Controller
+  def greeting
+    present_meta :weather, "sunny"
+
+    present json: {
+      hello: "world"
+    }
+  end
+end
+```
+
+```json
+{
+  "ok": true,
+  "meta": {
+    "weather": "sunny"
+  },
+  "data": {
+    "hello": "world"
+  },
+  "errors": null
+}
+```
+
+#### Error Handling
+
+Send error response using the `error!` method if you're on a controller and raise `ApiError` if you're outside of the controller.
+
+If you're sending a string as error it will automatically be converted to an object with the key `message`.
+
+```ruby
+class Api::V1::ArticleController < Api::V1Controller
+  def restricted
+    error!("You are not authorized to access this resource", status: :unauthorized)
+  end
+end
+```
+
+```ruby
+def get_article(id)
+  article = Article.find_by(id: id)
+  raise ApiError.new("Article not found", status: :not_found) unless article.present?
+
+  article
+end
+```
+
+When you want to send a manual parameter validation error, you can use the `param_error!` method.
+
+```ruby
+param_error!(:email, "must be filled", "must be a valid email")
+```
 
 #### Parameters Validation
 
@@ -58,93 +188,9 @@ class Api::V1::ArticleController < Api::V1Controller
       required(:content).filled(:string)
     end
 
-    article = Article.create!(title: params[:title], content: params[:content])
-    render_json data: ArticleEntity.represent(article), status: 201
+    @article = Article.create!(title: params[:title], content: params[:content])
   end
 end
-```
-
-#### Service Layer
-
-Service object is a pattern that can help you separate business logic from controllers and models, making your code more modular and easier to test and avoid fat models and controllers.
-
-Simply create a new service object by inheriting from `ApplicationService` and define a `call` method. You can then call the service object using the `call` class method.
-
-```ruby
-class Article::TopFiveService < ApplicationService
-  def initialize(category:)
-    @category = category
-  end
-
-  def call
-    # your logic
-  end
-end
-
-Article::TopFiveService.call(category: "technology")
-```
-
-#### Entity Layer
-
-Entity objects are used to represent your models in a way that can be easily serialized into JSON. You can define an entity object by inheriting from `ApplicationEntity` powered by `grape-entity` gem and expose the attributes you want to include in the JSON response.
-
-Be aware that you can also expose associations and nested entities, avoid exposing sensitive and unnecessary attributes, use the `if` option to conditionally expose attributes.
-
-> [!WARNING]
-> The `ApplicationEntity` automatically exposes the `id`, `created_at`, and `updated_at` attributes of the model.
-
-```ruby
-class ArticleEntity < ApplicationEntity
-  expose :title
-  expose :content
-  expose :author, using: AuthorEntity, if: lambda { |object|
-    object.association(:author).loaded?
-  }
-end
-```
-
-If you're using Active Storage, you can expose the attachment URLs when the association is loaded.
-
-```ruby
-class Article < ApplicationRecord
-  has_one_attached :thumbnail_file
-  has_many_attached :content_files
-end
-
-class BlobEntity < Grape::Entity
-  expose :url
-end
-
-class ArticleEntity < ApplicationEntity
-  expose :title
-  expose :content
-  expose :thumbnail_file, using: BlobEntity, if: lambda { |object|
-    object.association(:thumbnail_file_blob).loaded?
-  }
-  expose :content_files, using: BlobEntity, if: lambda { |object|
-    object.association(:content_files_blobs).loaded?
-  }
-end
-```
-
-### API
-
-Features that are available in the API template.
-
-- Predefined `routes` and `controller` for versioning.
-- Handle `exception` in application and send a proper response.
-
-JSON structure for the response looks like this:
-
-```json
-{
-  "ok": true,
-  "meta": null,
-  "data": {
-    "hello": "world"
-  },
-  "errors": null
-}
 ```
 
 When validation fails, the response will properly map the error messages with the corresponding fields.
@@ -163,71 +209,6 @@ When validation fails, the response will properly map the error messages with th
 }
 ```
 
-#### Send Response
-
-You can use the `render_json` method to send a JSON response.
-
-```ruby
-class Api::V1::ArticleController < Api::V1Controller
-  def index
-    articles = Article.all
-    render_json data: ArticleEntity.represent(articles)
-  end
-
-  def show
-    article = Article.find(params[:id])
-    recommendations = Article::TopFiveService.call(category: article.category)
-
-    render_json data: {
-      article: ArticleEntity.represent(article),
-      recommendations: ArticleEntity.represent(recommendations)
-    }
-  end
-end
-```
-
-You can also build a response using the `present_meta` and `present` method and send it using the `render_json` method.
-
-```ruby
-class Api::V1::ArticleController < Api::V1Controller
-  def show
-    present_meta :ads, true
-
-    present :article, Article.find(params[:id])
-    present :latest_articles, Article.order(created_at: :desc).limit(5)
-
-    render_json
-  end
-end
-```
-
-Send error response using the `error!` method if you're on a controller and raise `ApiError` if you're outside of the controller.
-
-If you're sending a string as error it will automatically be converted to an object with the key `message`.
-
-```ruby
-class Api::V1::ArticleController < Api::V1Controller
-  def restricted
-    error!("You are not authorized to access this resource", status: 403)
-  end
-end
-```
-
-```ruby
-def get_article(id)
-  article = Article.find_by(id: id)
-  raise ApiError.new("Article not found", status: 404) if article.nil?
-
-  article
-end
-```
-
-When you want to send a manual parameter validation error, you can use the `param_error!` method.
-
-```ruby
-param_error!(:email, "must be filled", "must be a valid email")
-```
-
 #### Pagination
 
 Use the `paginate` method to paginate the records. The `paginate` method automatically validate and uses the `page`, `per_page`, `start_date` and `end_date` parameters from the request to paginate the records.
@@ -235,12 +216,27 @@ Use the `paginate` method to paginate the records. The `paginate` method automat
 ```ruby
 class Api::V1::ArticleController < Api::V1Controller
   def index
-    articles = paginate Article.order(created_at: :desc)
-    render_json data: ArticleEntity.represent(articles)
+    articles = paginate Article.order(id: :desc)
+    present json: ArticleEntity.represent(articles)
   end
 end
 ```
 
-### Inertia
+The result will send the paginated information in the meta section of the response.
 
-Coming soon.
+```json
+{
+  "ok": true,
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "per_page": 10,
+      "total": 50
+    }
+  },
+  "data": [
+    // paginated data
+  ],
+  "errors": null
+}
+```
