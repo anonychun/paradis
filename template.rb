@@ -104,13 +104,15 @@ file "app/errors/application_error.rb", <<~RUBY
   end
 RUBY
 
-inject_into_class "app/models/application_record.rb", "ApplicationRecord", <<~RUBY.indent(2)
-  before_create :assign_id
+insert_into_file "app/models/application_record.rb", after: "primary_abstract_class" do
+  <<~RUBY.indent(2).prepend("\n\n").chomp
+    before_create :assign_id
 
-  private def assign_id
-    self.id ||= Util.generate_id
-  end
-RUBY
+    private def assign_id
+      self.id ||= Util.generate_id
+    end
+  RUBY
+end
 
 ignored_files = <<~TXT.prepend("\n")
   # Folder for JetBrains IDEs
