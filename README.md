@@ -66,18 +66,20 @@ end
 
 Use `present` method in `controller` or `view` to standardize the API response. The `present` method will automatically wrap the response in a JSON object with the following structure:
 
+if the status code is indicating an error the `errors` field will be containing the error messages otherwise null.
+
 ```json
 {
   "ok": true,
   "meta": null,
   "data": {
-    // this will be the response data
+    "article": {
+      "id": "0196a944-0603-7464-8363-99b2d0ef18f4",
+      "title": "Hello world",
+      "content": "This is the content of the article"
+    }
   },
-  "errors": {
-    // if the status code is indicating an error
-    // this will be containing the error messages
-    // otherwise null
-  }
+  "errors": null
 }
 ```
 
@@ -236,9 +238,7 @@ The result will send the paginated information in the meta section of the respon
       "total": 50
     }
   },
-  "data": [
-    // paginated data
-  ],
+  "data": [],
   "errors": null
 }
 ```
