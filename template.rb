@@ -36,6 +36,17 @@ end
 
 copy_file "config/locales/id.yml"
 
+primary_key_type = options[:database].eql?("sqlite3") ? :text : :uuid
+
+initializer "generators.rb", <<~RUBY
+  Rails.application.config.generators do |g|
+    g.orm :active_record, primary_key_type: :#{primary_key_type}
+    g.assets false
+    g.helper false
+    g.test_framework nil
+  end
+RUBY
+
 inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
   <<~RUBY.indent(4).prepend("\n")
     config.active_record.default_timezone = :utc
@@ -49,15 +60,6 @@ initializer "clear_local_log.rb", <<~RUBY
   if Rails.env.local?
     require "rails/tasks"
     Rake::Task["log:clear"].invoke
-  end
-RUBY
-
-initializer "generators.rb", <<~RUBY
-  Rails.application.config.generators do |g|
-    g.orm :active_record, primary_key_type: :uuid
-    g.assets false
-    g.helper false
-    g.test_framework nil
   end
 RUBY
 
