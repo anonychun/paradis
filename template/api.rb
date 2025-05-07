@@ -35,7 +35,7 @@ initializer "dry_schema.rb", <<~RUBY
   Dry::Schema.config.messages.backend = :i18n
 RUBY
 
-insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
+inject_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
   <<~RUBY.indent(2).prepend("\n")
     namespace :api, defaults: {format: :json} do
       namespace :v1 do
@@ -146,9 +146,15 @@ lib "api/helpers/exception_handler.rb", <<~RUBY
         else
           status = :internal_server_error
           errors = {message: "Terjadi kesalahan, silakan coba lagi"}
+
+          if Rails.env.local?
+            raise e
+          else
+            Rails.error.report(e)
+          end
         end
 
-        if Rails.env.local? || ENV["DEBUG"].eql?("1")
+        if ENV["DEBUG"].eql?("1")
           present_meta(:trace, {
             class: e.class.name,
             exception: e

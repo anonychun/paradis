@@ -34,8 +34,6 @@ gem_group :development do
   add_gem "standard"
 end
 
-add_gem "mission_control-jobs"
-
 copy_file "config/locales/id.yml"
 
 inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
@@ -44,12 +42,6 @@ inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
     config.time_zone = "Asia/Jakarta"
 
     config.solid_queue.preserve_finished_jobs = false
-  RUBY
-end
-
-insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
-  <<~RUBY.indent(2).prepend("\n")
-    mount MissionControl::Jobs::Engine, at: "/jobs"
   RUBY
 end
 
@@ -135,6 +127,7 @@ TXT
 append_to_file ".gitignore", ignored_files
 append_to_file ".dockerignore", ignored_files
 
+apply "template/monitor.rb"
 apply "template/api.rb"
 apply "template/docker.rb"
 apply "template/javascript.rb"
