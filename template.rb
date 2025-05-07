@@ -38,7 +38,14 @@ add_gem "mission_control-jobs"
 
 copy_file "config/locales/id.yml"
 
-application "config.solid_queue.preserve_finished_jobs = false"
+inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
+  <<~RUBY.indent(4).prepend("\n")
+    config.active_record.default_timezone = :utc
+    config.time_zone = "Asia/Jakarta"
+
+    config.solid_queue.preserve_finished_jobs = false
+  RUBY
+end
 
 insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
   <<~RUBY.indent(2).prepend("\n")
@@ -104,8 +111,8 @@ file "app/errors/application_error.rb", <<~RUBY
   end
 RUBY
 
-insert_into_file "app/models/application_record.rb", after: "primary_abstract_class" do
-  <<~RUBY.indent(2).prepend("\n\n").chomp
+inject_into_file "app/models/application_record.rb", before: /^end\s*$/ do
+  <<~RUBY.indent(2).prepend("\n")
     before_create :assign_id
 
     private def assign_id
