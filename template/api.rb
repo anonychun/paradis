@@ -86,7 +86,7 @@ RUBY
 
 file "app/views/api/_api.json.jbuilder", <<~RUBY
   present json do
-    json.merge! payload
+    json.merge! body
   end
 RUBY
 
@@ -113,7 +113,7 @@ lib "api/helpers/presenter.rb", <<~RUBY
     end
 
     def present(json: nil, status: :ok)
-      render template: "api/_api", status: status, locals: {payload: json}
+      render template: "api/_api", status: status, locals: {body: json}
     end
 
     def present_success
