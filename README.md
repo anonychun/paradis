@@ -16,6 +16,8 @@ Create a new Rails application using the template by running the following comma
 
 ```bash
 rails new app \
+  --javascript esbuild \
+  --css tailwind \
   --skip-rubocop \
   -m https://raw.githubusercontent.com/anonychun/paradis/main/template.rb
 ```
