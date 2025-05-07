@@ -136,3 +136,4 @@ append_to_file ".gitignore", ignored_files
 append_to_file ".dockerignore", ignored_files
 
 apply "template/api.rb"
+apply "template/javascript.rb"
