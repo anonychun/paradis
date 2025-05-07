@@ -78,6 +78,11 @@ initializer "active_record.rb", <<~RUBY
   end
 RUBY
 
+file "app/constants/constant.rb", <<~RUBY
+  module Constant
+  end
+RUBY
+
 file "app/services/service.rb", <<~RUBY
   module Service
     module_function
