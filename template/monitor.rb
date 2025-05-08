@@ -41,7 +41,7 @@ after_bundle do
     end
   end
 
-  file "app/controllers/dev_controller.rb", <<~RUBY
+  create_file "app/controllers/dev_controller.rb", <<~RUBY
     class DevController < ApplicationController
       http_basic_authenticate_with(
         name: ENV.fetch("DEV_USER", ""),

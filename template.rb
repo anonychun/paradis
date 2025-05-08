@@ -77,18 +77,18 @@ initializer "active_record.rb", <<~RUBY
   end
 RUBY
 
-file "app/constants/constant.rb", <<~RUBY
+create_file "app/constants/constant.rb", <<~RUBY
   module Constant
   end
 RUBY
 
-file "app/services/service.rb", <<~RUBY
+create_file "app/services/service.rb", <<~RUBY
   module Service
     module_function
   end
 RUBY
 
-file "app/utils/util.rb", <<~RUBY
+create_file "app/utils/util.rb", <<~RUBY
   module Util
     module_function
 
@@ -98,7 +98,7 @@ file "app/utils/util.rb", <<~RUBY
   end
 RUBY
 
-file "app/errors/application_error.rb", <<~RUBY
+create_file "app/errors/application_error.rb", <<~RUBY
   class ApplicationError < StandardError
   end
 RUBY
@@ -131,3 +131,6 @@ apply "template/monitor.rb"
 apply "template/api.rb"
 apply "template/docker.rb"
 apply "template/javascript.rb"
+
+after_bundle do
+end

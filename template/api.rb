@@ -44,18 +44,18 @@ insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" d
   RUBY
 end
 
-file "app/models/current.rb", <<~RUBY
+create_file "app/models/current.rb", <<~RUBY
   class Current < ActiveSupport::CurrentAttributes
     attribute :api_ctx
   end
 RUBY
 
-file "app/entities/application_entity.rb", <<~RUBY
+create_file "app/entities/application_entity.rb", <<~RUBY
   class ApplicationEntity < Grape::Entity
   end
 RUBY
 
-file "app/errors/api_error.rb", <<~RUBY
+create_file "app/errors/api_error.rb", <<~RUBY
   class ApiError < ApplicationError
     attr_reader :status, :errors
 
@@ -66,7 +66,7 @@ file "app/errors/api_error.rb", <<~RUBY
   end
 RUBY
 
-file "app/helpers/api_helper.rb", <<~RUBY
+create_file "app/helpers/api_helper.rb", <<~RUBY
   module ApiHelper
     def present(json, &)
       ok = response.status >= 100 && response.status < 400
@@ -84,7 +84,7 @@ file "app/helpers/api_helper.rb", <<~RUBY
   end
 RUBY
 
-file "app/views/api/_api.json.jbuilder", <<~RUBY
+create_file "app/views/api/_api.json.jbuilder", <<~RUBY
   present json do
     json.merge! body
   end
@@ -215,7 +215,7 @@ lib "api/helpers.rb", <<~RUBY
   end
 RUBY
 
-file "app/controllers/api_controller.rb", <<~RUBY
+create_file "app/controllers/api_controller.rb", <<~RUBY
   class ApiController < ActionController::API
     include ActionController::Cookies
 
@@ -223,7 +223,7 @@ file "app/controllers/api_controller.rb", <<~RUBY
   end
 RUBY
 
-file "app/controllers/api/v1_controller.rb", <<~RUBY
+create_file "app/controllers/api/v1_controller.rb", <<~RUBY
   class Api::V1Controller < ApiController
   end
 RUBY
