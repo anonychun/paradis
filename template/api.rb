@@ -154,13 +154,6 @@ lib "api/helpers/exception_handler.rb", <<~RUBY
           end
         end
 
-        if ENV["DEBUG"].eql?("1")
-          present_meta(:trace, {
-            class: e.class.name,
-            exception: e
-          })
-        end
-
         present json: errors, status: status
       end
     end
