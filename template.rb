@@ -124,9 +124,6 @@ ignored_files = <<~TXT.prepend("\n")
   .DS_Store
 TXT
 
-append_to_file ".gitignore", ignored_files
-append_to_file ".dockerignore", ignored_files
-
 apply "template/monitor.rb"
 apply "template/api.rb"
 apply "template/docker.rb"
@@ -135,6 +132,9 @@ apply "template/javascript.rb"
 after_bundle do
   run "bundle lock --add-platform aarch64-linux arm64-darwin x86_64-linux x86_64-darwin"
   run "bundle install && bundle update && bundle update --bundler"
+
+  append_to_file ".gitignore", ignored_files
+  append_to_file ".dockerignore", ignored_files
 
   run "standardrb --fix"
 end
