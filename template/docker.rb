@@ -1,4 +1,12 @@
-gsub_file "Dockerfile", "BUNDLE_WITHOUT=\"development\"", "BUNDLE_WITHOUT=\"development:test\""
+insert_into_file "bin/docker-entrypoint", after: "  ./bin/rails db:prepare" do
+  <<~RUBY.indent(2).prepend("\n").chomp
+    ./bin/rails db:seed
+  RUBY
+end
+
+gsub_file "Dockerfile",
+  "BUNDLE_WITHOUT=\"development\"",
+  "BUNDLE_WITHOUT=\"development:test\""
 
 insert_into_file "Dockerfile", after: "ENV RAILS_ENV=\"production\" \\" do
   <<~RUBY.indent(4).prepend("\n").chomp
