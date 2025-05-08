@@ -51,8 +51,6 @@ inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
   <<~RUBY.indent(4).prepend("\n")
     config.active_record.default_timezone = :utc
     config.time_zone = "Asia/Jakarta"
-
-    config.solid_queue.preserve_finished_jobs = false
   RUBY
 end
 

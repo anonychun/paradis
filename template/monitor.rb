@@ -9,11 +9,19 @@ inject_into_file "config/routes.rb", after: "Rails.application.routes.draw do" d
 end
 
 after_bundle do
-  rails_command "generate solid_errors:install"
+  generate "solid_errors:install"
 
   gsub_file "config/environments/production.rb",
     "config.solid_errors.send_emails = true",
     "config.solid_errors.send_emails = false"
+
+  gsub_file "config/environments/production.rb",
+    "config.solid_errors.username = Rails.application.credentials.dig(:solid_errors, :username)",
+    "config.solid_errors.username = ENV.fetch(\"DEV_USER\", \"\")"
+
+  gsub_file "config/environments/production.rb",
+    "config.solid_errors.password = Rails.application.credentials.dig(:solid_errors, :password)",
+    "config.solid_errors.password = ENV.fetch(\"DEV_PASSWORD\", \"\")"
 
   inject_into_file "config/database.yml", before: "  cache:" do
     if options[:database] == "sqlite3"
@@ -31,5 +39,22 @@ after_bundle do
           migrations_paths: db/errors_migrate
       YAML
     end
+  end
+
+  file "app/controllers/dev_controller.rb", <<~RUBY
+    class DevController < ApplicationController
+      http_basic_authenticate_with(
+        name: ENV.fetch("DEV_USER", ""),
+        password: ENV.fetch("DEV_PASSWORD", "")
+      )
+    end
+  RUBY
+
+  inject_into_file "config/environments/production.rb", before: "  # Configure Solid Errors" do
+    <<~RUBY.indent(2).prepend("\n").concat("\n")
+      config.solid_queue.preserve_finished_jobs = false
+      config.mission_control.jobs.http_basic_auth_enabled = false
+      config.mission_control.jobs.base_controller_class = "DevController"
+    RUBY
   end
 end
