@@ -1,7 +1,7 @@
 add_gem "mission_control-jobs"
 add_gem "solid_errors"
 
-inject_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
+insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
   <<~RUBY.indent(2).prepend("\n")
     mount MissionControl::Jobs::Engine, at: "jobs"
     mount SolidErrors::Engine, at: "errors"
@@ -23,7 +23,7 @@ after_bundle do
     "config.solid_errors.password = Rails.application.credentials.dig(:solid_errors, :password)",
     "config.solid_errors.password = ENV.fetch(\"DEV_PASSWORD\", \"\")"
 
-  inject_into_file "config/database.yml", before: "  cache:" do
+  insert_into_file "config/database.yml", before: "  cache:" do
     if options[:database] == "sqlite3"
       <<~YAML.indent(2)
         errors:
@@ -50,7 +50,7 @@ after_bundle do
     end
   RUBY
 
-  inject_into_file "config/environments/production.rb", before: "  # Configure Solid Errors" do
+  insert_into_file "config/environments/production.rb", before: "  # Configure Solid Errors" do
     <<~RUBY.indent(2).prepend("\n").concat("\n")
       config.solid_queue.preserve_finished_jobs = false
       config.mission_control.jobs.http_basic_auth_enabled = false

@@ -47,7 +47,7 @@ initializer "generators.rb", <<~RUBY
   end
 RUBY
 
-inject_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
+insert_into_file "config/application.rb", before: /^\s{2}end\s*$/ do
   <<~RUBY.indent(4).prepend("\n")
     config.active_record.default_timezone = :utc
     config.time_zone = "Asia/Jakarta"
@@ -103,7 +103,7 @@ file "app/errors/application_error.rb", <<~RUBY
   end
 RUBY
 
-inject_into_file "app/models/application_record.rb", before: /^end\s*$/ do
+insert_into_file "app/models/application_record.rb", before: /^end\s*$/ do
   <<~RUBY.indent(2).prepend("\n")
     before_create :assign_id
 

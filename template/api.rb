@@ -35,7 +35,7 @@ initializer "dry_schema.rb", <<~RUBY
   Dry::Schema.config.messages.backend = :i18n
 RUBY
 
-inject_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
+insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
   <<~RUBY.indent(2).prepend("\n")
     namespace :api, defaults: {format: :json} do
       namespace :v1 do
