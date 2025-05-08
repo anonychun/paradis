@@ -136,5 +136,5 @@ after_bundle do
   append_to_file ".gitignore", ignored_files
   append_to_file ".dockerignore", ignored_files
 
-  run "standardrb --fix"
+  run "standardrb --fix-unsafely"
 end
