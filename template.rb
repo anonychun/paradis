@@ -125,6 +125,7 @@ ignored_files = <<~TXT.prepend("\n")
 TXT
 
 apply "template/monitor.rb"
+apply "template/web.rb"
 apply "template/api.rb"
 apply "template/docker.rb"
 apply "template/javascript.rb"
