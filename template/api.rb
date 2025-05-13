@@ -162,6 +162,8 @@ RUBY
 
 lib "api/helpers/paginator.rb", <<~RUBY
   module Api::Helpers::Paginator
+    extend ActiveSupport::Concern
+
     def paginate(collection)
       params.validate! do
         optional(:page).filled(:integer, gt?: 0)
