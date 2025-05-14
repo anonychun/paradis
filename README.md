@@ -168,7 +168,7 @@ end
 ```ruby
 def get_article(id)
   article = Article.find_by(id: id)
-  raise ApiError.new("Article not found", status: :not_found) unless article.present?
+  raise ApiError.new("Article not found", :not_found) unless article.present?
 
   article
 end

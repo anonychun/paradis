@@ -8,10 +8,9 @@ initializer "action_controller.rb", <<~RUBY
       result = schema.call(to_unsafe_h)
 
       unless result.success?
-        raise ApiError.new(
-          errors: {params: result.errors(locale: :id).to_h},
-          status: :unprocessable_entity
-        )
+        raise ApiError.new({
+          params: result.errors(locale: :id).to_h
+        }, :unprocessable_entity)
       end
 
       merge!(result.to_h)
@@ -59,7 +58,7 @@ create_file "app/errors/api_error.rb", <<~RUBY
   class ApiError < ApplicationError
     attr_reader :status, :errors
 
-    def initialize(errors: {}, status: :internal_server_error)
+    def initialize(errors = {}, status = :internal_server_error)
       @errors = errors.is_a?(String) ? {message: errors} : errors
       @status = status
     end
@@ -105,7 +104,7 @@ lib "api/helpers/presenter.rb", <<~RUBY
     end
 
     def error!(errors, status = :internal_server_error)
-      raise ApiError.new(errors: errors, status: status)
+      raise ApiError.new(errors, status)
     end
 
     def param_error!(key, *messages)
