@@ -36,7 +36,7 @@ def add_gem_group(name, *groups)
     return gem_group(*groups) { add_gem(name) }
   end
 
-  insert_into_file "Gemfile", after: /^group #{group_name} do$/ do
+  insert_into_file "Gemfile", after: "group #{group_name} do" do
     <<~RUBY.indent(2).prepend("\n")
       gem "#{name}"
     RUBY
