@@ -44,17 +44,13 @@ def add_gem_group(name, *groups)
 end
 
 insert_into_file "Gemfile", "\n# Other"
-
 add_gem_group "dotenv", :development, :test
 add_gem_group "standard", :development
 
 copy_file "config/locales/id.yml"
 
-primary_key_type = options[:database].eql?("sqlite3") ? :text : :uuid
-
 initializer "generators.rb", <<~RUBY
   Rails.application.config.generators do |g|
-    g.orm :active_record, primary_key_type: :#{primary_key_type}
     g.assets false
     g.helper false
     g.test_framework nil
@@ -72,22 +68,6 @@ initializer "clear_local_log.rb", <<~RUBY
   if Rails.env.local?
     require "rails/tasks"
     Rake::Task["log:clear"].invoke
-  end
-RUBY
-
-initializer "active_record.rb", <<~RUBY
-  ActiveSupport.on_load(:active_record_postgresqladapter) do
-    self.datetime_type = :timestamptz
-  end
-
-  ActiveRecord::Base.class_eval do
-    before_create :assign_id
-
-    private def assign_id
-      if self.class.name.start_with?("ActiveStorage::")
-        self.id ||= Util.generate_id
-      end
-    end
   end
 RUBY
 
@@ -117,16 +97,6 @@ create_file "app/errors/application_error.rb", <<~RUBY
   end
 RUBY
 
-insert_into_file "app/models/application_record.rb", before: /^end\s*$/ do
-  <<~RUBY.indent(2).prepend("\n")
-    before_create :assign_id
-
-    private def assign_id
-      self.id ||= Util.generate_id
-    end
-  RUBY
-end
-
 ignored_files = <<~TXT.prepend("\n")
   # Folder for JetBrains IDEs
   /.idea/
@@ -138,6 +108,7 @@ ignored_files = <<~TXT.prepend("\n")
   .DS_Store
 TXT
 
+apply "template/database.rb"
 apply "template/monitor.rb"
 apply "template/web.rb"
 apply "template/api.rb"
