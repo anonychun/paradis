@@ -26,13 +26,27 @@ def add_gem(name, *options)
   gem(name, *options) unless gem_exists?(name)
 end
 
-gem_group :development, :test do
-  add_gem "dotenv"
+def add_gem_group(name, *groups)
+  if gem_exists?(name)
+    return nil
+  end
+
+  group_name = groups.map { ":#{it}" }.join(", ")
+  unless /^\s*group #{group_name} do/.match?(IO.read("Gemfile"))
+    return gem_group(*groups) { add_gem(name) }
+  end
+
+  insert_into_file "Gemfile", after: /^group #{group_name} do$/ do
+    <<~RUBY.indent(2).prepend("\n")
+      gem "#{name}"
+    RUBY
+  end
 end
 
-gem_group :development do
-  add_gem "standard"
-end
+insert_into_file "Gemfile", "\n# Other"
+
+add_gem_group "dotenv", :development, :test
+add_gem_group "standard", :development
 
 copy_file "config/locales/id.yml"
 
