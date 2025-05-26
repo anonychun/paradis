@@ -73,11 +73,11 @@ create_file "app/helpers/api_helper.rb", <<~RUBY
       json.meta Current.api_ctx[:meta].empty? ? nil : Current.api_ctx[:meta]
 
       if ok
-        json.data(&)
+        json.data(nil) unless json.data(&)
         json.errors nil
       else
         json.data nil
-        json.errors(&)
+        json.errors(nil) unless json.errors(&)
       end
     end
   end
