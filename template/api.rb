@@ -1,5 +1,11 @@
-add_gem "dry-schema"
 add_gem "blueprinter"
+add_gem "dry-schema"
+
+initializer "blueprinter.rb", <<~RUBY
+  Blueprinter.configure do |config|
+    config.sort_fields_by = :definition
+  end
+RUBY
 
 initializer "action_controller.rb", <<~RUBY
   ActionController::Parameters.class_eval do
