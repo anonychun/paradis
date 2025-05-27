@@ -28,21 +28,21 @@ This command will create a new Rails application named `app` and apply the Parad
 
 Paradis is just combination of built-in Rails features and some additional gems. Here are some of the features that you can use:
 
-#### Entity Layer
+#### Blueprint Layer
 
-Entity objects are used to represent your models in a way that can be easily serialized into JSON. You can define an entity object by inheriting from `ApplicationEntity` powered by `grape-entity` gem and expose the attributes you want to include in the JSON response.
+Blueprint objects are used to represent your models in a way that can be easily serialized into JSON. You can define an blueprint object by inheriting from `ApplicationBlueprint` powered by `blueprinter` gem and expose the attributes you want to include in the JSON response.
 
 Be aware that you can also expose associations and nested entities, avoid exposing sensitive and unnecessary attributes.
 
 ```ruby
-class ArticleEntity < ApplicationEntity
-  expose :title
-  expose :content
-  expose :author, using: AuthorEntity
+class ArticleBlueprint < ApplicationBlueprint
+  field :title
+  field :content
+  association :author, blueprint: AuthorBlueprint
 end
 ```
 
-If you're using Active Storage, you can expose the attachment URLs by using the other defined entity that only exposes the URL.
+If you're using Active Storage, you can expose the attachment URLs by using the other defined blueprint that only exposes the URL.
 
 ```ruby
 class Article < ApplicationRecord
@@ -50,15 +50,15 @@ class Article < ApplicationRecord
   has_many_attached :content_files
 end
 
-class BlobEntity < ApplicationEntity
-  expose :url
+class BlobBlueprint < ApplicationBlueprint
+  field :url
 end
 
-class ArticleEntity < ApplicationEntity
-  expose :title
-  expose :content
-  expose :thumbnail_file, using: BlobEntity
-  expose :content_files, using: BlobEntity
+class ArticleBlueprint < ApplicationBlueprint
+  field :title
+  field :content
+  field :thumbnail_file, blueprint: BlobBlueprint
+  field :content_files, blueprint: BlobBlueprint
 end
 ```
 
@@ -221,7 +221,7 @@ Use the `paginate` method to paginate the records. The `paginate` method automat
 class Api::V1::ArticleController < Api::V1Controller
   def index
     articles = paginate Article.order(id: :desc)
-    present json: ArticleEntity.represent(articles)
+    present json: ArticleBlueprint.represent(articles)
   end
 end
 ```
