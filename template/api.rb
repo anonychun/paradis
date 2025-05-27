@@ -1,5 +1,5 @@
 add_gem "dry-schema"
-add_gem "grape-entity"
+add_gem "blueprinter"
 
 initializer "action_controller.rb", <<~RUBY
   ActionController::Parameters.class_eval do
@@ -49,8 +49,11 @@ create_file "app/models/current.rb", <<~RUBY
   end
 RUBY
 
-create_file "app/entities/application_entity.rb", <<~RUBY
-  class ApplicationEntity < Grape::Entity
+create_file "app/blueprints/application_blueprint.rb", <<~RUBY
+  class ApplicationBlueprint < Blueprinter::Base
+    def self.represent(...)
+      render_as_hash(...)
+    end
   end
 RUBY
 
