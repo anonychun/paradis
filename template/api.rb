@@ -68,7 +68,7 @@ RUBY
 create_file "app/helpers/api_helper.rb", <<~RUBY
   module ApiHelper
     def present(json, &)
-      ok = response.status >= 100 && response.status < 400
+      ok = response.successful?
       json.ok ok
       json.meta Current.api_ctx[:meta].empty? ? nil : Current.api_ctx[:meta]
 
