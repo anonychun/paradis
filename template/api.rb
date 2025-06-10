@@ -157,9 +157,9 @@ lib "api/helpers/exception_handler.rb", <<~RUBY
 
           if Rails.env.local?
             raise e
-          else
-            Rails.error.report(e)
           end
+
+          Rails.error.report(e)
         end
 
         present json: errors, status: status

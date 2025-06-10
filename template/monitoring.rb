@@ -1,6 +1,14 @@
 add_gem "mission_control-jobs"
 add_gem "solid_errors"
 
+initializer "solid_errors.rb", <<~RUBY
+  if Rails.env.local?
+    Rails.application.config.after_initialize do
+      Rails.error.unsubscribe(SolidErrors::Subscriber)
+    end
+  end
+RUBY
+
 insert_into_file "config/routes.rb", after: "Rails.application.routes.draw do" do
   <<~RUBY.indent(2).prepend("\n")
     mount MissionControl::Jobs::Engine, at: "jobs"
